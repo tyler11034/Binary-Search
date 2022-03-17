@@ -1,0 +1,120 @@
+//Joseph Tyler Faircloth
+//3-7-2022
+//Algorithm design and analysis
+//Programming assignment 2
+// This program implements an improved TREE-INSERT in a binary search tree.
+// It will be improved by reducing the number of key comparisons so that each node’s key is compared 
+// with the new node’s key for at most once during each insertion.
+
+import java.util.Arrays;
+
+public class BinarySearchTree {
+
+	public static void main(String[] args) {
+
+		BinarySearchTree tree = new BinarySearchTree();
+
+		int[] inputArray = {6,2,8,5};
+
+		for (int i = 0; i < inputArray.length; i++) {
+			tree.insert(inputArray[i]);
+		}
+		int treeSize = tree.getSize();
+		System.out.printf("The orginal array is %d characters long:%n", +treeSize);
+		System.out.println(Arrays.toString(inputArray));
+		System.out.println();
+		System.out.println("Inorder traversal of Binary Search tree after sorting:");
+		tree.inorder();
+		System.out.println();
+		System.out.printf("%nThe number of key comparisons made before insertion: %d", totalComparisons);
+		System.out.println();
+
+		int count = totalComparisons;
+		int insertionNumber = 8;
+		tree.insert(insertionNumber);
+		System.out.println("Key Comparisons after insertion: " + totalComparisons);
+		count = totalComparisons - count;
+
+		System.out.printf(
+				"Element inserted: %d%n" + "Key Comparison difference: %d%n" + "%nUpdated tree, post insertion:%n ",
+				insertionNumber, count);
+		tree.inorder();
+
+	}
+
+	static int totalComparisons = 0;
+
+	class Node {
+		int key;
+		int duplicates;
+		Node left, right;
+
+		public Node(int item) {
+			key = item;
+			left = right = null;
+		}
+	}
+
+	Node root;
+
+	BinarySearchTree() {
+		root = null;
+
+	}
+
+	void insert(int key) {
+		root = insertKey(root, key);
+	}
+
+	// Insert key in the tree
+	Node insertKey(Node root, int key) {
+		// Return a new node if the tree is empty
+		if (root == null) {
+			root = new Node(key);
+			return root;
+		}
+		totalComparisons++;
+		
+		if (key == root.key) {
+			root.duplicates++;
+			return root;
+		}
+		
+		// Traverse to the right place and insert the node
+		if (key < root.key) {
+			root.left = insertKey(root.left, key);
+		} else {
+			root.right = insertKey(root.right, key);
+		}
+		return root;
+	}
+
+	void inorder() {
+		inorderRec(root);
+	}
+
+	// Inorder Traversal
+	void inorderRec(Node root) {
+		if (root != null) {
+			inorderRec(root.left);
+
+			if (root.duplicates >= 1) {
+				System.out.printf("%d + (%d)duplicates -> ", root.key, root.duplicates);
+			} else {
+				System.out.printf("%d - > ", root.key);
+				inorderRec(root.right);
+			}
+		}
+	}
+
+	public int getSize() {
+		return (size(root));
+	}
+
+	private int size(Node root) {
+		if (root == null) {
+			return 0;
+		}
+		return 1 + size(root.left) + size(root.right);
+	}
+}
